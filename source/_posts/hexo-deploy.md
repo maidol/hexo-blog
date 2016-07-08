@@ -1,5 +1,5 @@
 ---
-title: study-note
+title: hexo-deploy
 date: 2016-7-06 22:37:00
 tags: hexo deploy git
 ---
