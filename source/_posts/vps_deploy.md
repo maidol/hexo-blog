@@ -188,7 +188,7 @@ tags: vps linode vpn nginx
 >>- 安装node, 安装git
 >>- 安装hexo
 >>>- `mkdir blog` `cd ./blog` `npm install -g hexo` 
->>>- 初始化 `hexo init` 
+>>>- 初始化 `hexo init` or `npm install`
 >>>- 生成静态页 `hexo generate` or `hexo g` 
 >>>- 本地启动服务 `hexo server` 浏览器输入http://localhost:4000 
 >>- 配置Github, 部署到Github 
