@@ -66,6 +66,7 @@ tags: vps linode vpn nginx
 - 安装tmux
 >- `apt-get install tmux`
 >- 新建会话 `tmux new -s @session`
+>- 进入已打开的会话 `tmux a -t @session`
 - 部署 shadowsocks-manager
 >- 获取源码 `git clone https://github.com/shadowsocks/shadowsocks-manager.git`
 >- 安装 `npm install -g bower` `cd shadowsocks-manager` `npm install` `bower install`
@@ -120,27 +121,53 @@ tags: vps linode vpn nginx
 - 安装mysql(源码编译安装), 并设置远程登陆
 >- 安装环境准备 
 >>- `sudo apt-get install build-essential libncurses5-dev cmake` 
->>- `sudo groupadd mysql` `sudo useradd -g mysql mysql` `sudo mkdir -p /data/mysql/` `sudo mkdir -p /data/mysql/data/`
+>>- 创建mysql用户 并且禁止登录 `sudo groupadd mysql` `sudo useradd -s /sbin/nologin -g mysql mysql` `sudo mkdir -p /data/mysql/` `sudo mkdir -p /data/mysql/data/`
 >- mysql5.7.5之后版本都要安装boost包。所以我选择是下载已经自带boost安装包的mysql安装包：
+>- `cd /usr/local/src`
 >- `wget http://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-boost-5.7.13.tar.gz`
 >- `tar zxvf mysql-boost-5.7.13.tar.gz` `cd mysql-5.7.13/`
->- `sh BUILD/autorun.sh`
+>- 网上某些教程多了这一句 `sh BUILD/autorun.sh`, 安装前不要执行, 否则会安装失败
 >- MySQL从5.5版本开始，通过./configure进行编译配置方式已经被取消，取而代之的是cmake工具 
->- `cmake -DCMAKE_INSTALL_PREFIX=/usr/local/mysql -DSYSCONFDIR=/etc -DWITH_MYISAM_STORAGE_ENGINE=1 -DWITH_INNOBASE_STORAGE_ENGINE=1 -DWITH_PARTITION_STORAGE_ENGINE=1 -DWITH_FEDERATED_STORAGE_ENGINE=1 -DEXTRA_CHARSETS=all -DDEFAULT_CHARSET=utf8mb4 -DDEFAULT_COLLATION=utf8mb4_general_ci -DWITH_EMBEDDED_SERVER=1 -DENABLED_LOCAL_INFILE=1 -DWITH_BOOST=boost -DENABLE_DOWNLOADS=1` 
+>- `cmake . -DCMAKE_INSTALL_PREFIX=/usr/local/mysql \
+            -DSYSCONFDIR=/etc \
+            -DMYSQL_DATADIR=/data/mysql/data \
+            -DWITH_MYISAM_STORAGE_ENGINE=1 \
+            -DWITH_INNOBASE_STORAGE_ENGINE=1 \
+            -DWITH_PARTITION_STORAGE_ENGINE=1 \
+            -DWITH_FEDERATED_STORAGE_ENGINE=1 \
+            -DWITH_BLACKHOLE_STORAGE_ENGINE=1 \
+            -DEXTRA_CHARSETS=all \
+            -DDEFAULT_CHARSET=utf8mb4 \
+            -DDEFAULT_COLLATION=utf8mb4_general_ci \
+            -DWITH_EMBEDDED_SERVER=1 \
+            -DENABLED_LOCAL_INFILE=1 \
+            -DENABLE_DTRACE=0 \
+            -DWITH_BOOST=boost \
+            -DENABLE_DOWNLOADS=1`
 >- mysql configure 安装参数解释：
 >>- -DCMAKE_INSTALL_PREFIX=/usr/local/mysql #指定安装路径 
--DDEFAULT_CHARSET=utf8mb4 #默认使用utf8mb4字符 
--DDEFAULT_COLLATION=utf8mb4_general_ci #校验字符 
--DWITH_INNOBASE_STORAGE_ENGINE=1 #安装innodb引擎  
--DWITH_BOOST=boost #指定boost的安装位置 
--DENABLE_DOWNLOADS #是否要下载可选的文件。例如，启用此选项（设置为1），cmake将下载谷歌所使用的测试套件运行单元测试 
->- `make && make install` 
->- `chown -R mysql:mysql /usr/local/mysql #对mysql目录进行赋予权限` 
->- 生成mysql配置文件 `cp /usr/local/mysql/support-files/my-default.cnf /etc/my.cnf` 
->- 对数据库进行初始化 `/usr/local/mysql/bin/mysqld --initialize --user=mysql` 
->- 复制文件mysql.server 可以使用service 命令进行控制 `cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysql` `service mysql start` #启动mysql 
+    -DDEFAULT_CHARSET=utf8mb4 #默认使用utf8mb4字符 
+    -DDEFAULT_COLLATION=utf8mb4_general_ci #校验字符 
+    -DWITH_INNOBASE_STORAGE_ENGINE=1 #安装innodb引擎  
+    -DWITH_BOOST=boost #指定boost的安装位置 
+    -DENABLE_DOWNLOADS #是否要下载可选的文件。例如，启用此选项设置为1, cmake将下载谷歌所使用的测试套件运行单元测试 
+>- 编译 `make`  安装 `sudo make install` 
+>- `sudo chown -R mysql:mysql /usr/local/mysql` `sudo chown -R mysql:mysql /data/mysql/` #对mysql目录进行赋予权限 
+>- 生成mysql配置文件 `sudo cp /usr/local/mysql/support-files/my-default.cnf /etc/my.cnf` 
+>- 对数据库进行初始化 先清空 /data/mysql/data  `sudo /usr/local/mysql/bin/mysqld --initialize --user=mysql --explicit_defaults_for_timestamp=1`
+>- [Warning] TIMESTAMP with implicit DEFAULT value is deprecated. Please use --explicit_defaults_for_timestamp server option (see documentation for more details). 
+解决：/etc/my.cnf 加上 explicit_defaults_for_timestamp = 1 
+>- 复制文件mysql.server 可以使用service 命令进行控制 `sudo cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysql` `sudo service mysql start` #启动mysql
+>- # 修改密码：MySQL5.7在安装完后，第一次启动时，会在root目录下生产一个随机的密码，文件名为 .mysql_secret, `cat /root/.mysql_secret` 
 >- 登录数据库修改密码 `/usr/local/mysql/bin/mysql -u root -p` 
 >- 输入密码回车。登录成功后，输入以下字符，来修改密码，比如我要修改密码为root `set password = password('root');` 
+>- # 配置环境变量，否则 mysql 客户端命令不可用 
+>>- `vim /etc/profile` 在文件末尾添加 PATH=/usr/local/mysql/bin:$PATH  export PATH 
+>>- `source /etc/profile` 
+>- MySQL服务器上添加一个允许远程访问的用户
+>>- 用root用户登陆, `mysql -u root -p`
+>>- `grant all privileges on *.* to 创建的用户名@"%" identified by "密码";` `flush privileges;` # 刷新刚才的内容. 格式：grant 权限 on 数据库名.表名 to 用户@登录主机 identified by "用户密码";@ 后面是访问mysql的客户端IP地址（或是 主机名） % 代表任意的客户端，如果填写 localhost 为本地访问 那此用户就不能远程访问该mysql数据库了 
+>>- 查看用户 `> use mysql;` `> select user, host from user;`
 - 源码安装redis, 并设置远程登陆
 >- 安装make `sudo apt-get make`
 >- 获取安装包 `wget http://download.redis.io/releases/redis-3.2.1.tar.gz`
@@ -160,7 +187,7 @@ tags: vps linode vpn nginx
 >- 配置环境
 >>- 安装node, 安装git
 >>- 安装hexo
->>>- `mkdir blog` `cd ./blog` `npm install-g hexo` 
+>>>- `mkdir blog` `cd ./blog` `npm install -g hexo` 
 >>>- 初始化 `hexo init` 
 >>>- 生成静态页 `hexo generate` or `hexo g` 
 >>>- 本地启动服务 `hexo server` 浏览器输入http://localhost:4000 
