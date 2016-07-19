@@ -3,6 +3,7 @@ title: vps-deploy
 date: 2016-7-06 22:37:00
 tags: vps linode vpn nginx
 ---
+- ubuntu下的操作 
 - 创建普通用户, 之后所有的操作使用新用户登录进行
 >- `adduser kmaidol` 创建用户kmaidol
 >- 设置sodu权限
@@ -13,11 +14,24 @@ tags: vps linode vpn nginx
     root ALL=(ALL) ALL
     kmaidol ALL=(ALL) ALL
 >>- 使用 kmaidol 登陆
+>>- 必须确保新增用户获取了sudo权限, 并且可以远程登陆之后, 才做以下的操作, 以下的操作必须由新增的用户进行操作, 取消root远程登录
+>>>- 下面还有一个问题，现在服务器开着root这个用户，远程可以通过root用户登录，这让人很不放心啊，所以得取消root远程登录
+>>>- `sudo vim /etc/ssh/sshd_config` 修改PermitRootLogin 的值为 yes
+>>>- 然后重启ssh `sudo service ssh restart` 再次尝试使用root登录，会发现登不上去了
 - 设置时区
 >- `tzselect` 执行命令按提示操作
 >- 设置localtime `sudo cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime`
 >- `date` 查看时间
 >- 更多时区信息可以在以下目录中去选取：`cd /usr/share/zoneinfo/`
+- 禁用ipv6
+>-  `vim /etc/sysctl.conf`
+>-  添加内容, 如果是 OpenVZ 环境，请把最后一条的 eth0 改成 venet0 ，同理如果网卡是 eth1 或者其他的名字，也要相应修改。
+    net.ipv6.conf.all.disable_ipv6 = 1
+    net.ipv6.conf.default.disable_ipv6 = 1
+    net.ipv6.conf.lo.disable_ipv6 = 1
+    net.ipv6.conf.eth0.disable_ipv6 = 1
+>- 执行 `sudo sysctl -p`
+>- `ifconfig` 查看
 - 安装 nvm node
 >- 安装 curl `sudo apt-get install curl`
 >- `curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | bash`
@@ -73,9 +87,9 @@ tags: vps linode vpn nginx
 >- `cd shadowsocks-manager` `mv config.js.sample config.js` `node server`
 - 安装nginx
 >- `sudo apt-get install nginx`
->- 常用命令 启动`nginx -c filename` 停止`nginx -s stop/quit/` `pkill -9 nginx`
->- 重载配置 `nginx -s reload`
->- 检查配置文件是否正确 `nginx -t`
+>- 常用命令 启动`sudo nginx -c filename` 停止`sudo nginx -s stop/quit/` `pkill -9 nginx`
+>- 重载配置 `sudo nginx -s reload`
+>- 检查配置文件是否正确 `sudo nginx -t`
 >- nginx 配置 (含ssl)
 >>- ###
         worker_processes 1;
@@ -172,15 +186,19 @@ tags: vps linode vpn nginx
 >- 安装make `sudo apt-get make`
 >- 获取安装包 `wget http://download.redis.io/releases/redis-3.2.1.tar.gz`
 >- 安装 `tar xzf redis-3.2.1.tar.gz` `cd redis-3.2.1` `make`
->- The binaries that are now compiled are available in the src directory. Run Redis with: `src/redis-server` 
+>- The binaries that are now compiled are available in the src directory. Run Redis with: `src/redis-server --port 6380` or `src/redis-server /etc/redis/redis.conf`  
 >- You can interact with Redis using the built-in client: `src/redis-cli`
+>- 如果要把redis安装到系统, 执行 `cd ./src` `sudo make install`
 >- 设置守护进程运行redis
 >>- `vim redis.conf` 修改 `daemonize no` -> `daemonize yes`
->- `make install`, 执行这句命令可把redis安装到系统, 就无需使用 `src/redis-server` 来启动, 直接 `redis-server`
+>- `sudo make install`, 执行这句命令可把redis安装到系统, 就无需使用 `src/redis-server` 来启动, 直接 `redis-server` , 不指定端口和配置文件, 会默认读取路径 /etc/redis.conf 
 >- 启动redis服务, 一般需指定自定义的配置文件 `redis-server redis.conf`, 不指的话则读取默认配置 
 >- 停止redis服务 `redis-cli shutdown` 
+>- 如果要设置redis服务, `sudo cp ./utils/redis_init_script /etc/init.d/redis` 
+>>- `sudo service redis start/stop/...` 
+>>- `service redis start` 默认配置文件读取 /etc/redis/.. , `sudo cp ./redis.conf /etc/redis/redis.conf`
 >- 设置远程登陆, 并开启密码验证 
->>- `vim redis.conf`, 找到requirepass，然后修改如下: requirepass yourpassword; `# bind 127.0.0.1` 去除 # 
+>>- `vim redis.conf`, 找到requirepass，然后修改如下: requirepass yourpassword; `# bind 127.0.0.1 maidol.pw` 去除 # 
 >>- 登陆 `redis-cli -h ip -p port -a yourpassword ` 
 >- 设置 redis 开机启动
 - 安装hexo
@@ -209,4 +227,13 @@ branch: master
 >>>- `hexo generate` #生成静态页面至public目录 
 >>>- `hexo server` #开启预览访问端口 
 >>>- `hexo deploy` #将.deploy目录部署到GitHub 
+- 安装cloud9/core https://github.com/c9/core
+>- `git clone https://github.com/c9/core.git` c9
+>- `cd c9`
+>- `scripts/install-sdk.sh`
+>- `node server.js --auth username:password`
+>- visit http://localhost:8181/ide.html
 - 流量监控 vnstat/iftop 
+>- ubuntu 下安装 `sudo apt-get install iftop`
+>- `sudo iftop -i eth0`
+- shadowsocks 限制端口流量/带宽, 流量统计, iptables
