@@ -271,8 +271,8 @@ branch: master
 >- rabbitmq web管理页面插件安装 
 >>- `rabbitmq-plugins enable rabbitmq_management` 
 >>- accessed using your favourite web browser by visiting: http://[your IP]:15672/
->>- guest具有"/"上的全部权限, 密码guest，仅能有localhost访问RabbitMQ包括Plugin，建议删除或更改密码。可通过将配置文件中loopback_users置孔来取消其本地访问的限制：
-[{rabbit, [{loopback_users, []}]}]
+>>- guest具有"/"上的全部权限, 密码guest，仅能有localhost访问RabbitMQ包括Plugin，建议删除或更改密码。可通过将配置文件rabbitmq.config中添加`{loopback_users, []`来取消guest的登陆限制:
+[{rabbit, [{loopback_users, []}]}], 然后可使用guest登陆创建一个admin用户, 之后删除这段{loopback_users, []}, guest就无法登陆了, 之后使用新用户进行登陆。二进制安装包默认没有这个配置文件(/etc/rabbitmq/rabbitmq.config), 可以从源码包中copy过来, 在源码包对应的文件`doc/rabbitmq.config.example`
 >>- 增加用户 `rabbitmqctl add_user admin admin ` 设置角色 `rabbitmqctl set_user_tags admin administraotr`  查看用户列表 `rabbitmqctl list_users` 
 >- 使用已编译安装包安装rabbitmq(只成功测试了这种安装方式可行)
 >>- 安装erlang
