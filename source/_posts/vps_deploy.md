@@ -10,9 +10,9 @@ tags: vps linode vpn nginx
 >>- `apt-get install vim`
 >>- `chmod 744 /etc/sudoers` 获取写权限
 >>- `vim /etc/sudoers` 编辑如下, 获得sudo权限
-    # User privilege specification
-    root ALL=(ALL) ALL
-    kmaidol ALL=(ALL) ALL
+    -# User privilege specification
+    -root ALL=(ALL) ALL
+    -kmaidol ALL=(ALL) ALL
 >>- 使用 kmaidol 登陆
 >>- 必须确保新增用户获取了sudo权限, 并且可以远程登陆之后, 才做以下的操作, 以下的操作必须由新增的用户进行操作, 取消root远程登录
 >>>- 下面还有一个问题，现在服务器开着root这个用户，远程可以通过root用户登录，这让人很不放心啊，所以得取消root远程登录
@@ -23,6 +23,10 @@ tags: vps linode vpn nginx
 >- 设置localtime `sudo cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime`
 >- `date` 查看时间
 >- 更多时区信息可以在以下目录中去选取：`cd /usr/share/zoneinfo/`
+>- 与时间服务器上的时间同步的方法
+>>- 安装ntpdate工具 `sudo apt-get install ntpdate` 
+>>- 同步 `sudo ntpdate cn.pool.ntp.org` 
+>>- 将系统时间写入硬件时间 `hwclock --systohc` 
 - 禁用ipv6
 >-  `vim /etc/sysctl.conf`
 >-  添加内容, 如果是 OpenVZ 环境，请把最后一条的 eth0 改成 venet0 ，同理如果网卡是 eth1 或者其他的名字，也要相应修改。
@@ -233,6 +237,56 @@ branch: master
 >- `scripts/install-sdk.sh`
 >- `node server.js --auth username:password`
 >- visit http://localhost:8181/ide.html
+- ubuntu安装rabbimq
+>- rabbimq依赖erlang
+>>- 安装erlang `wget http://erlang.org/download/otp_src_19.0.tar.gz`  `tar zxvf otp_src_19.0.tar.gz` `cd otp_src_19.0` 
+>>-  `./configure --prefix=/home/kmaidol/erlang` 
+>>>- 可能会报错 configure: error: No curses library functions found configure: error: /bin/sh '/home/kmaidol/erlang/configure' failed for erts  
+>>>- 原因是缺少ncurses包 解决：在ubuntu系统下 `apt-cache search ncurses` `sudo apt-get install libncurses5-dev`
+>>>- 继续安装erlang  `./configure --prefix=/home/kmaidol/erlang` `make` `make install`
+>>- 测试erlang 进入`cd /home/kmaidol/erlang`，启动erl测试erlang是否安装成功
+>>- 配置erlang环境变量
+>>>- 修改/etc/profile文件，增加下面的环境变量：（vim profile    i插入  编辑完毕ESC退出   wq!强制修改）
+>>>- #set erlang environment
+>>>- export PATH=$PATH:/home/kmaidol/erlang/bin:$PATH
+>>>- source profile使得文件生效
+>- rabbitMq安装配置
+>>- `wget https://github.com/rabbitmq/rabbitmq-server/archive/rabbitmq_v3_6_3.tar.gz` 
+>>- `tar zxvf rabbitmq_v3_6_3.tar.gz` 
+>>- `cd rabbitmq_v3_6_3`  `make`
+>>>- error: rabbitmq-components.mk must be updated! n this case, just run the following command to update your copy:
+`make rabbitmq-components-mk` 
+>>>- `make install` 
+>>- 修改/etc/profile，添加环境变量
+>>>- #set rabbitmq environment
+>>>- export PATH=$PATH:/usr/rabbitmq/sbin
+>>>- source profile使得文件生效
+>>- 启动 `rabbitmq-server start` 
+>- apt-get安装rabbitMq
+>>- `apt-get update`  `apt-get -y upgrade` 
+>>- Enable RabbitMQ application repository: `echo "deb http://www.rabbitmq.com/debian/ testing main" >> /etc/apt/sources.list` 
+>>- Add the verification key for the package: `curl http://www.rabbitmq.com/rabbitmq-signing-key-public.asc | sudo apt-key add -` 
+>>- Update the sources with our new addition from above: `apt-get update` 
+>>- `sudo apt-get install rabbitmq-server` 
+>- rabbitmq web管理页面插件安装 
+>>- `rabbitmq-plugins enable rabbitmq_management` 
+>>- accessed using your favourite web browser by visiting: http://[your IP]:15672/
+>>- guest具有"/"上的全部权限, 密码guest，仅能有localhost访问RabbitMQ包括Plugin，建议删除或更改密码。可通过将配置文件中loopback_users置孔来取消其本地访问的限制：
+[{rabbit, [{loopback_users, []}]}]
+>>- 增加用户 `rabbitmqctl add_user admin admin ` 设置角色 `rabbitmqctl set_user_tags admin administraotr`  查看用户列表 `rabbitmqctl list_users` 
+>- 使用已编译安装包安装rabbitmq(只成功测试了这种安装方式可行)
+>>- 安装erlang
+>>- 安装其他依赖 `sudo apt-get install -y erlang-nox erlang-dev erlang-src`  
+>>- 获取二进制编译包 `wget http://www.rabbitmq.com/releases/rabbitmq-server/v3.6.3/rabbitmq-server-generic-unix-3.6.3.tar.xz ` 
+>>- 解压 `xz -d rabbitmq-server-generic-unix-3.6.3.tar.xz` `tar -xvf rabbitmq-server-generic-unix-3.6.3.tar ` 
+>>- `cd rabbitmq_server-3.6.3/` `cd ./sbin` 启动 `./rabbitmq-server start` 
+>>- 修改/etc/profile，添加环境变量
+>>>- `cp -rf ./rabbitmq_server-3.6.3 /usr/rabbitmq` 
+>>>- #set rabbitmq environment
+>>>- export PATH=$PATH:/usr/rabbitmq/sbin
+>>>- source profile使得文件生效
+>>- 启动 `rabbitmq-server start` or `rabbitmq-server -detached` 查看状态 `rabbitmqctl status ` 关闭 `rabbitmqctl stop`
+
 - 流量监控 vnstat/iftop 
 >- ubuntu 下安装 `sudo apt-get install iftop`
 >- `sudo iftop -i eth0`
