@@ -13,7 +13,7 @@ tags: vps linode vpn nginx
     -# User privilege specification
     -root ALL=(ALL) ALL
     -kmaidol ALL=(ALL) ALL
->>- 使用 kmaidol 登陆
+>>- 使用 kmaidol 登陆 or `su kmaidol`切换
 >>- 必须确保新增用户获取了sudo权限, 并且可以远程登陆之后, 才做以下的操作, 以下的操作必须由新增的用户进行操作, 取消root远程登录
 >>>- 下面还有一个问题，现在服务器开着root这个用户，远程可以通过root用户登录，这让人很不放心啊，所以得取消root远程登录
 >>>- `sudo vim /etc/ssh/sshd_config` 修改PermitRootLogin 的值为 yes
@@ -248,8 +248,8 @@ branch: master
 >>- 配置erlang环境变量
 >>>- 修改/etc/profile文件，增加下面的环境变量：（vim profile    i插入  编辑完毕ESC退出   wq!强制修改）
 >>>- #set erlang environment
->>>- export PATH=$PATH:/home/kmaidol/erlang/bin:$PATH
->>>- source profile使得文件生效
+>>>- export PATH=$PATH:/home/kmaidol/erlang/bin
+>>>- `source profile` 使得文件生效
 >- rabbitMq安装配置
 >>- `wget https://github.com/rabbitmq/rabbitmq-server/archive/rabbitmq_v3_6_3.tar.gz` 
 >>- `tar zxvf rabbitmq_v3_6_3.tar.gz` 
@@ -260,7 +260,7 @@ branch: master
 >>- 修改/etc/profile，添加环境变量
 >>>- #set rabbitmq environment
 >>>- export PATH=$PATH:/usr/rabbitmq/sbin
->>>- source profile使得文件生效
+>>>- `source profile` 使得文件生效
 >>- 启动 `rabbitmq-server start` 
 >- apt-get安装rabbitMq
 >>- `apt-get update`  `apt-get -y upgrade` 
@@ -273,19 +273,35 @@ branch: master
 >>- accessed using your favourite web browser by visiting: http://[your IP]:15672/
 >>- guest具有"/"上的全部权限, 密码guest，仅能有localhost访问RabbitMQ包括Plugin，建议删除或更改密码。可通过将配置文件rabbitmq.config中添加`{loopback_users, []`来取消guest的登陆限制:
 [{rabbit, [{loopback_users, []}]}], 然后可使用guest登陆创建一个admin用户, 之后删除这段{loopback_users, []}, guest就无法登陆了, 之后使用新用户进行登陆。二进制安装包默认没有这个配置文件(/etc/rabbitmq/rabbitmq.config), 可以从源码包中copy过来, 在源码包对应的文件`doc/rabbitmq.config.example`
->>- 增加用户 `rabbitmqctl add_user admin admin ` 设置角色 `rabbitmqctl set_user_tags admin administraotr`  查看用户列表 `rabbitmqctl list_users` 
+>>- 增加用户 `rabbitmqctl add_user admin admin ` 设置角色 `rabbitmqctl set_user_tags admin administrator`  查看用户列表 `rabbitmqctl list_users` 修改用户的密码`rabbitmqctl  change_password  Username  Newpassword` 
+>>>- 给用户分配角色后就可以登陆web管理后台
+>>- 新建virtual host `rabbitmqctl add_vhost test_host` , 查看 `rabbitmqctl list_vhosts` 如此用户名为test的用户就可以访问vitrual host为test_host的资源了，并且具备读写的权限 
+>>- 分配访问权限 `rabbitmqctl set_permissions -p test_host  test "test-*" ".*" ".*"` 
 >- 使用已编译安装包安装rabbitmq(只成功测试了这种安装方式可行)
 >>- 安装erlang
->>- 安装其他依赖 `sudo apt-get install -y erlang-nox erlang-dev erlang-src`  
+>>- error missing_dependencies,[crypto,ssl], 需要安装其他依赖 `sudo apt-get install -y erlang-nox erlang-dev erlang-src`   
 >>- 获取二进制编译包 `wget http://www.rabbitmq.com/releases/rabbitmq-server/v3.6.3/rabbitmq-server-generic-unix-3.6.3.tar.xz ` 
 >>- 解压 `xz -d rabbitmq-server-generic-unix-3.6.3.tar.xz` `tar -xvf rabbitmq-server-generic-unix-3.6.3.tar ` 
 >>- `cd rabbitmq_server-3.6.3/` `cd ./sbin` 启动 `./rabbitmq-server start` 
 >>- 修改/etc/profile，添加环境变量
->>>- `cp -rf ./rabbitmq_server-3.6.3 /usr/rabbitmq` 
+>>>- 程序路径建议放在当前用户/home/k/目录下, 避免 sudo not found 的错误
+>>>- `cp -rf ./rabbitmq_server-3.6.3 /home/k/rabbitmq` 
 >>>- #set rabbitmq environment
->>>- export PATH=$PATH:/usr/rabbitmq/sbin
->>>- source profile使得文件生效
+>>>- export PATH=$PATH:/home/k/rabbitmq/sbin
+>>>- `source profile` 使得文件生效
 >>- 启动 `rabbitmq-server start` or `rabbitmq-server -detached` 查看状态 `rabbitmqctl status ` 关闭 `rabbitmqctl stop`
+>>- 启动时 error missing_dependencies,[crypto,ssl], 需要安装其他依赖 `sudo apt-get install -y erlang-nox erlang-dev erlang-src`  
+>- docker部署rabbitmq
+>>- 安装docker, 并成功运行 
+>>- `docker pull frodenas/rabbitmq`  [rabbitmq docker](https://hub.docker.com/r/frodenas/rabbitmq/)
+>>- `docker run -d \
+    --name rabbitmq \
+    -p 5672:5672 \
+    -p 15672:15672 \
+    -e RABBITMQ_USERNAME=username \
+    -e RABBITMQ_PASSWORD=pwd \
+    -e RABBITMQ_VHOST=myvhost \
+    frodenas/rabbitmq` 
 
 - 流量监控 vnstat/iftop 
 >- ubuntu 下安装 `sudo apt-get install iftop`
