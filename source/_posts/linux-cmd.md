@@ -16,8 +16,10 @@ tags: linux cmd
 - `chmod -R 754 ./` 4-read 2-write 1-ex
 - `ps -ef | grep docker` 查看进程
 - 修改用户密码 `passwd username` 
-- scp复制文件 `scp /home/daisy/full.tar.gz k@172.19.2.75:/home/k` 
+- scp复制文件 `scp /home/daisy/full.tar.gz k@172.19.2.75:/home/k` 需要ssh服务 
 - ubuntu 安装ssh服务 
 >- `sudo apt-get install openssh-server` `sudo service ssh start` 
 - 退出telnet
->>- `ctrl + c` or `ctrl + ]` 然后 `quit`
+>>- `ctrl + c` or `ctrl + ]` 然后 `quit` 
+- 查看端口 tcp
+>- netstat -anp | grep 5672
