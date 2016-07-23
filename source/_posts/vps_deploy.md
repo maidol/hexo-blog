@@ -64,6 +64,10 @@ tags: vps linode vpn nginx
                 "method": "aes-256-cfb"
              }
 >- 启动shadowsocks `ssserver --manager-address 127.0.0.1:6001 -c ss.json -d start`   -d 代表守护进程运行
+>- sslocal是linux的shadowsocks客户端, 执行 `sslocal -h` 查看使用方法 
+- docker 部署shadowsocks
+>- `docker pull oddrationale/docker-shadowsocks` 
+>- This image uses ENTRYPOINT to run the containers as an executable `docker run -d -p 1984:1984 oddrationale/docker-shadowsocks -s 0.0.0.0 -p 1984 -k $SSPASSWORD -m aes-256-cfb`  For more command line options, refer to the [shadowsocks documentation](https://github.com/shadowsocks/shadowsocks)
 - 安装mongodb
 >- `sudo apt-get install mongodb`
 >- `mongod -h` 查看帮助,  mongod就是服务程序, mongo是客户端shell
