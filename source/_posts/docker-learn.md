@@ -63,6 +63,9 @@ tags: docker
 >- `sudo apt-get install lxc-docker` 
 >- `sudo service docker start` 
 >- `docker version`  
+- 安装 Docker 官方的最新发行版， 支持 Ubuntu 12.04 以上版本
+>- `curl -sSL https://get.daocloud.io/docker | sh`  
+>- `sudo service docker status` 输出 docker start/running 就表示安装成功 
 - docker常用命令
 >- `docker images` 列出所有镜像(images) 
 >- `docker ps -a/-l`    列出正在运行的(容器)containers 
@@ -88,6 +91,15 @@ tags: docker
 >>>- 只有在启动时附加参数 -it 才能 ctrl+p ctrl+q 退出  
 - -d -t -i 参数 , exec 
 >- `docker run -d rabbitmq`  参数运行了容器, `docker exec -it rabbitmq /bin/bash` 可以进入容器进行管理 `exit` 退出 , 对容器修改后, 可通过 `commit` 固化为images  
+- 使用daocloud加速器 加速镜像下载速度
+>- 需要登录daocloud [https://dashboard.daocloud.io/](https://dashboard.daocloud.io/), 选择加速器选项 -> 立即开始
+>- 按照提示安装
+>- 安装 Docker安装 Docker 官方的最新发行版， 支持 Ubuntu 12.04 以上版本
+>>- `curl -sSL https://get.daocloud.io/docker | sh` `sudo service docker status` 输出 docker start/running 就表示安装成功 
+>- 安装主机监控程序
+>>- `curl -sSL https://get.daocloud.io/daomonit/install.sh | sh -s xxxxxxxxxxxxxxxxxxxxxxx`  
+>- 自有主机会跟daocloud账号绑定 
+>- `dao pull images` 使用dao命令拉取镜像 
 
 
 
