@@ -277,7 +277,7 @@ PS：简单来说，就是将客户端的公钥放到服务器上，那么客户
 > - 列出当前所有会话`tmux ls`
 > - 新建会话`tmux new -s @session`
 > - 接入指定会话`tmux a -t @session`
-> - 断开会话`tmux detach`  -> C+b d
+> - 断开会话`tmux detach`  -> Ctrl+b d
 > - 关闭服务(所有会话)`tmux kill-server`
 > - 关闭会话`tmux kill-session -t @session`
 > - 关闭窗口`tmux kill-window -t @name`
