@@ -70,7 +70,8 @@ tags: vps linode vpn nginx
 >- This image uses ENTRYPOINT to run the containers as an executable `docker run -d -p 1984:1984 oddrationale/docker-shadowsocks -s 0.0.0.0 -p 1984 -k $SSPASSWORD -m aes-256-cfb`  For more command line options, refer to the [shadowsocks documentation](https://github.com/shadowsocks/shadowsocks)
 - 安装mongodb
 >- `sudo apt-get install mongodb`
->- `mongod -h` 查看帮助,  mongod就是服务程序, mongo是客户端shell
+>- apt-get 安装后默认会作成服务 `/etc/init.d/mongodb` `sudo service mongodb restart/start/stop/status ` 
+>- `mongod -h` 查看帮助,  mongod是服务程序, mongodb封装了mongod, 而mongo是客户端shell 
 >- mongodb 实现远程连接
 >>- 1,添加管理员账 
 >>>- `mongo` 本机登陆mongo
@@ -81,7 +82,7 @@ tags: vps linode vpn nginx
 >>>- #bind_ip = 127.0.0.1   //注释此行 
 >>>- auth = true       //将此行前的注释去掉
 >>- 3，重启mongodb
->>>- `/etc/init.d/mongod `
+>>>- `/etc/init.d/mongodb `  `sudo service mongodb restart`  
 >>- 4. 防火墙开放27017端口
 >>>- `iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport 27017 -j ACCEPT `
 >>- 如果需要远程登陆指定的数据库, 需要在对应的数据库里创建用户(). 例如有数据库 test, 则`use test`, 再在test数据库创建用户 `db.addUser('kmaidol','xxxxxx')`, 之后就可以使用这个用户访问test

@@ -98,8 +98,11 @@ tags: docker
 >>- `curl -sSL https://get.daocloud.io/docker | sh` `sudo service docker status` 输出 docker start/running 就表示安装成功 
 >- 安装主机监控程序
 >>- `curl -sSL https://get.daocloud.io/daomonit/install.sh | sh -s xxxxxxxxxxxxxxxxxxxxxxx`  
+>- 删除操作仅适用于已经断开连接的主机，您可以通过下述命令卸载主机监控程序，再进行删除 
+>>- `dpkg -r daomonit # For Ubuntu/Debian` `rpm -e daomonit  # For CentOS/Fedora` 
 >- 自有主机会跟daocloud账号绑定 
->- `dao pull images` 使用dao命令拉取镜像 , 需要先登录daocloud 拉取镜像前请先尝试登录: `docker login daocloud.io` 
+>- `dao pull images` 使用dao命令拉取镜像 , 如果开通了[我的镜像](http://docs.daocloud.io/daocloud-registry/pull-push)服务, 可以登录: `docker login daocloud.io` 
+>- daocloud是国内的镜像下载源, docker hub是国外的镜像下载源,`docker login daocloud.io` 可登陆daocloud,  执行`docker login`按提示可以登录docker hub, 可以管理自己的镜像 , pull/push 
 
 
 
