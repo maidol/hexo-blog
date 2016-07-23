@@ -291,10 +291,26 @@ branch: master
 >>>- `source profile` 使得文件生效
 >>- 启动 `rabbitmq-server start` or `rabbitmq-server -detached` 查看状态 `rabbitmqctl status ` 关闭 `rabbitmqctl stop`
 >>- 启动时 error missing_dependencies,[crypto,ssl], 需要安装其他依赖 `sudo apt-get install -y erlang-nox erlang-dev erlang-src`  
->- docker部署rabbitmq
+>- 使用官方rabbitmq docker images部署安装
+>>- 安装docker, 并成功运行
+>>- `docker pull rabbitmq` [rabbitmq docker](https://hub.docker.com/_/rabbitmq/)
+>>- 使用默认配置启动
+    `docker run -d --hostname my-rabbit --name some-rabbit rabbitmq:3` 
+>>- 自定义 并启用 rabbitmq web 管理 , 需要使用 `3-management` 
+    `docker run -d --hostname my-rabbit \
+      --name rabbitmq \
+      -p your-ip:15672:15672 \
+      -p your-ip:5672:5672 \
+      -e RABBITMQ_DEFAULT_USER=xxxx \
+      -e RABBITMQ_DEFAULT_PASS=xxxx \
+      -e RABBITMQ_DEFAULT_VHOST=my_vhost \
+      rabbitmq:3-management` 
+>>>- your-ip不指定的话, 默认就是'0.0.0.0'
+>>>- `docker run -d rabbitmq`  参数运行了容器, `docker exec -it rabbitmq /bin/bash` 可以进入容器进行管理 `exit` 退出 , 对容器修改后, 可通过 `commit` 固化为images  
+>- 使用frodenas/rabbitmq docker images部署rabbitmq
 >>- 安装docker, 并成功运行 
 >>- `docker pull frodenas/rabbitmq`  [rabbitmq docker](https://hub.docker.com/r/frodenas/rabbitmq/)
->>- `docker run -d \
+>>- `docker run -d --hostname my-rabbit \
     --name rabbitmq \
     -p 5672:5672 \
     -p 15672:15672 \

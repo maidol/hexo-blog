@@ -19,3 +19,5 @@ tags: linux cmd
 - scp复制文件 `scp /home/daisy/full.tar.gz k@172.19.2.75:/home/k` 
 - ubuntu 安装ssh服务 
 >- `sudo apt-get install openssh-server` `sudo service ssh start` 
+- 退出telnet
+>>- `ctrl + c` or `ctrl + ]` 然后 `quit`
