@@ -99,7 +99,7 @@ tags: docker
 >- 安装主机监控程序
 >>- `curl -sSL https://get.daocloud.io/daomonit/install.sh | sh -s xxxxxxxxxxxxxxxxxxxxxxx`  
 >- 自有主机会跟daocloud账号绑定 
->- `dao pull images` 使用dao命令拉取镜像 
+>- `dao pull images` 使用dao命令拉取镜像 , 需要先登录daocloud 拉取镜像前请先登录: `docker login daocloud.io` 
 
 
 
