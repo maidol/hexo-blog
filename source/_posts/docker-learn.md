@@ -3,7 +3,59 @@ title: docker-learn
 date: 2016-7-22 22:37:00
 tags: docker
 ---
-- docker安装
+- 安装 docker  详细步骤
+>- Docker is supported on these Ubuntu operating systems:
+    Ubuntu Xenial 16.04 (LTS)
+    Ubuntu Wily 15.10
+    Ubuntu Trusty 14.04 (LTS)
+    Ubuntu Precise 12.04 (LTS)
+>- linux内核支持 `uname -r` 查看
+>- 1. Update your apt sources
+>>- Docker requires a 64-bit installation regardless of your Ubuntu version. Additionally, your kernel must be 3.10 at minimum 
+>>- `sudo apt-get update` `sudo apt-get install apt-transport-https ca-certificates` 
+>>- Add the new GPG key. `sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D` 
+>>- 设置下载源entries, Open the /etc/apt/sources.list.d/docker.list file in your favorite editor, If the file doesn’t exist, create it.
+>>>- `vim /etc/apt/sources.list.d/docker.list` 
+>>>- Remove any existing entries. 
+>>>- Add an entry for your Ubuntu operating system.
+>>>>- The possible entries are:
+      On Ubuntu Precise 12.04 (LTS)
+         deb https://apt.dockerproject.org/repo ubuntu-precise main
+      On Ubuntu Trusty 14.04 (LTS)
+         deb https://apt.dockerproject.org/repo ubuntu-trusty main
+      Ubuntu Wily 15.10
+         deb https://apt.dockerproject.org/repo ubuntu-wily main
+      Ubuntu Xenial 16.04 (LTS)
+         deb https://apt.dockerproject.org/repo ubuntu-xenial main
+>>>- Save and close the /etc/apt/sources.list.d/docker.list file.
+>>- Update the APT package index. `sudo apt-get update` 
+>>- Purge the old repo if it exists. `sudo apt-get purge lxc-docker` 
+>>- Verify that APT is pulling from the right repository. `apt-cache policy docker-engine` 
+>>- From now on when you run `apt-get upgrade`, APT pulls from the new repository.
+>- 2. Prerequisites by Ubuntu Version
+>>- Ubuntu Xenial 16.04 (LTS) / Ubuntu Wily 15.10 / Ubuntu Trusty 14.04 (LTS)
+    For Ubuntu Trusty, Wily, and Xenial, it’s recommended to install the linux-image-extra kernel package. The linux-image-extra package allows you use the aufs storage driver.
+
+    To install the linux-image-extra package for your kernel version:
+
+    Open a terminal on your Ubuntu host.
+    
+>>>- Update your package manager. `sudo apt-get update` 
+>>>- Install the recommended package. `sudo apt-get install linux-image-extra-$(uname -r)` 
+>>>- Go ahead and install Docker.
+>>- If you are installing on Ubuntu 14.04 or 12.04, apparmor is required. You can install it using: `apt-get install apparmor` 
+>>- Ubuntu Precise 12.04 (LTS)
+>>>- `uname -r` 查看 
+>>>- For Ubuntu Precise, Docker requires the 3.13 kernel version. If your kernel version is older than 3.13, you must upgrade it. Refer to this table to see which packages are required for your environment
+>>>- `sudo apt-get update` 
+>>>- Install both the required and optional packages `sudo apt-get install linux-image-generic-lts-trusty` 
+>>>- `sudo reboot` After your system reboots, go ahead and install Docker. 
+>- 3. Install (安装和运行都需要sudo或者root)
+>>- `sudo apt-get update` 
+>>- `sudo apt-get install docker-engine` 
+>>- `sudo service docker start` 
+>>- Verify docker is installed correctly. `sudo docker run hello-world` This command downloads a test image and runs it in a container. When the container runs, it prints an informational message. Then, it exits. 
+- ubuntu 14 docker安装
 >- `sudo apt-get install lxc-docker` 
 >- `sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9` 
 >- `sudo bash -c "echo deb https://get.docker.io/ubuntu docker main > /etc/apt/sources.list.d/docker.list" ` 
@@ -20,13 +72,15 @@ tags: docker
 - Docker去sudo
 >- 在Ubuntu下，在执行Docker时，每次都要输入sudo，同时输入密码，这里把当前用户执行权限添加到相应的docker用户组里面 
 >- 添加一个新的docker用户组 `sudo groupadd docker` 
->- 添加当前用户到docker用户组里，注意这里的king为ubuntu登录用户名 `sudo gpasswd -a king docker` 
+>- 添加当前用户到docker用户组里，注意这里的king为ubuntu登录用户名 `sudo usermod -aG docker king` 
 >- 重启Docker后台监护进程 `sudo service docker restart` 
 >- 重启之后，尝试一下，是否生效 `docker version` 
 >- 若还未生效，则系统重启，则生效 `sudo reboot` 
 >- Cannot connect to the Docker daemon. Is the docker daemon running on this host? 
 >>- 出现这种错误 先尝试用sudo执行, 再尝试下面步骤 
->>>- `sudo service docker stop` `sudo rm -rf /var/lib/docker` `sudo service docker start`  `sudo docker version` 
+>>>- Check that the DOCKER_HOST environment variable is not set for your shell. If it is, unset it.
+>>>- 还是不行则尝试 `sudo service docker stop` `sudo rm -rf /var/lib/docker` `sudo service docker start`  `sudo docker version` 
+>>>>- The above commands will not remove images, containers, volumes, or user created configuration files on your host. If you wish to delete all images, containers, and volumes run the following command:`sudo rm -rf /var/lib/docker` 
 - 如何进入Docker容器进程及如何退出
 >>- 如果启动了Docker容器，比如这样：`docker run -itd -p 3000:3000 --name my-web -v "$(pwd)":/webapp -w /webapp node npm start` 
 >>- 我启动了一个Node Web App。如何看到终端打印的报错和日志呢？docker有命令可以让你进入（attach）和退出（detach）该进程  `docker attach my-web ` 
