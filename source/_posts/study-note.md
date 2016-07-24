@@ -228,6 +228,7 @@ PS：简单来说，就是将客户端的公钥放到服务器上，那么客户
 >> - `./installZerio.sh`，这步会下载安装node 0.10.37，下载安装失败的话则会导致后面编译失败
 >> - `./installNuve.sh`，安装过程会启动mongodb，必须确保mongodb启动成功，有可能会因为硬盘空间不足而启动失败，这时就要手动重新启动，或者修改对应的启动脚本进行启动。这一步会产生licode_config.js文件
 > - `docker run -it --name licode -p 3001:3001 -p 3004:3004 -p 8080:8080 -p 3000:3000 -p 30000-31000:30000-31000/udp licode-image-work /bin/bash` , 启动容器， 如果启动失败报错，有可能是防火墙iptables的路由限制udp，udp的范围调整一下-`-p 30000-30100:30000-30100/udp` 
+>>- 改进 ``docker run -id --name licode -p 3001:3001 -p 3004:3004 -p 8080:8080 -p 3000:3000 -p 30000-31000:30000-31000/udp licode-image-work ./init.sh` ,/bin/bash 放在脚本init.sh里, 使用参数 -di 
 >> - `-it` 参数启动容器, 容器里面的程序不会在后台运行, 当从容器的控制台退出, 当前session运行的程序就会退出, 最好使用`-d`参数run容器, 然后`exec -it $容器名称 /bin/bash`进入容器控制台进行操作 
 >>- 或者参考这种做法 I´d recommend that when using this image in the form that is shown in this example, you disable userland-proxy adding this to `vim /etc/default/docker`: DOCKER_OPTS="--userland-proxy=false" ; `sudo service docker restart` 
 If you don´t, docker will try to start a proxy process for each of the ports you are exposing from 30000 to 31000 in udp.... I´m pretty sure you don´t want that, with iptables is enough in most cases. 
