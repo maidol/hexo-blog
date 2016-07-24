@@ -24,3 +24,6 @@ tags: linux cmd
 >>- `ctrl + c` or `ctrl + ]` 然后 `quit` 
 - 查看端口 tcp
 >- netstat -anp | grep 5672
+- 测试端口连通性(ubuntu)
+>- tcp `telnet $IP $port` 
+>- udp `nc -vzu $IP $port` -u代表udp协议 ，-v代表详细模式，-z代表只监测端口不发送数据; Connection to $IP $port port [udp/ntp] succeeded! ; 没有回显代表不连通 
