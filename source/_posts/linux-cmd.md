@@ -6,6 +6,7 @@ tags: linux cmd
 - linux cmd 常用命令
 >- 释放内存 `sudo sh -c "echo 3 > /proc/sys/vm/drop_caches"` 
 >- 查询当前文件夹空间大小 `du -hsx * | sort -rh | head -10` 
+>- 内存/磁盘空间不足会导致bash tab无法补全 / pm2无法启动 / docker pull / docker start 无法成功执行 / 程序崩溃退出 等问题 
 >- 查看cpu占用 `top` 
 >- 查看内存占用 `free -m` 
 >- 源码安装的一些注意

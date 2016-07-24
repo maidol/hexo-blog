@@ -227,14 +227,19 @@ PS：简单来说，就是将客户端的公钥放到服务器上，那么客户
 >> - `./installUbuntuUnattend.sh`，安装所有依赖，必须确保没有error，对于warnning可以忽略
 >> - `./installZerio.sh`，这步会下载安装node 0.10.37，下载安装失败的话则会导致后面编译失败
 >> - `./installNuve.sh`，安装过程会启动mongodb，必须确保mongodb启动成功，有可能会因为硬盘空间不足而启动失败，这时就要手动重新启动，或者修改对应的启动脚本进行启动。这一步会产生licode_config.js文件
-> - `docker run -it --name licode -p 3001:3001 -p 3004:3004 -p 8080:8080 -p 3000:3000 -p 30000-31000:30000-31000/udp licode-image-work /bin/bash` , 启动容器， 如果启动失败报错，有可能是防火墙的路由限制udp，udp的范围调整一下-`-p 30000-30100:30000-30100/udp`
+> - `docker run -it --name licode -p 3001:3001 -p 3004:3004 -p 8080:8080 -p 3000:3000 -p 30000-31000:30000-31000/udp licode-image-work /bin/bash` , 启动容器， 如果启动失败报错，有可能是防火墙iptables的路由限制udp，udp的范围调整一下-`-p 30000-30100:30000-30100/udp` 
+>>- 或者参考这种做法 I´d recommend that when using this image in the form that is shown in this example, you disable userland-proxy adding this to `vim /etc/default/docker`: DOCKER_OPTS="--userland-proxy=false" ; `sudo service docker restart` 
+If you don´t, docker will try to start a proxy process for each of the ports you are exposing from 30000 to 31000 in udp.... I´m pretty sure you don´t want that, with iptables is enough in most cases. 
 > - 最关键的配置，在docker里面启动licode，需要注意修改文件licode_config.js
 >> - config.erizoController.publicIP = '192.168.1.113'; //192.168.1.113 为物理主机的ip，不是licode所在的docker容器的ip，因为外部网络通过物理主机然后才访问到licode
 >> - config.erizoAgent.publicIP = '192.168.1.113'; //192.168.1.113 为物理主机的ip，不是licode所在的docker容器的ip，因为外部网络通过物理主机然后才访问到licode
-> - `./initLicode.sh`，运行licode。如果第一次运行报错，尝试操作`pkill node`，再重试
+> - `./initLicode.sh`，运行licode。如果第一次运行报错(出现这种情况的原因尚且未知)，尝试操作`pkill node`，再重试`./initLicode.sh` 
 > - `./initBasicEample.sh`，如果启动报错，检查mongo是否启动成功
 >> - 每次进入docker容器都得手动启动mongodb，可以使用一些自动化脚本来解决问题 `mongod --dbpath /opt/licode/build/db --logpath /opt/licode/build/mongo.log --fork`
-> - 访问 https://192.168.1.113:3004
+> - 停止, 开启, 进入 `docker stop licode` `docker start licode` `docker exec -it licode /bin/bash ` exit 退出当前容器
+> - 访问 https://192.168.1.113:3004 , 不起作用的话, 需要刷新下页面 
+- 使用docker hub 部署licode 
+>- `docker pull rofl256/licodebasic` rofl256/licodebasic这个镜像可以成功运行; pull 镜像时 lynckia/licode(官方) 和 rofl256/licodebasic 会冲突, 只能pull其中一个, 目前测试lynckia/licode未能成功部署 
 
 
 
