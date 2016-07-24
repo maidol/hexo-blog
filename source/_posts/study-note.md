@@ -232,7 +232,7 @@ PS：简单来说，就是将客户端的公钥放到服务器上，那么客户
 >>- 或者参考这种做法 I´d recommend that when using this image in the form that is shown in this example, you disable userland-proxy adding this to `vim /etc/default/docker`: DOCKER_OPTS="--userland-proxy=false" ; `sudo service docker restart` 
 If you don´t, docker will try to start a proxy process for each of the ports you are exposing from 30000 to 31000 in udp.... I´m pretty sure you don´t want that, with iptables is enough in most cases. 
 > - 最关键的配置，在docker里面启动licode，需要注意修改文件licode_config.js
->> - config.erizoController.publicIP = '192.168.1.113'; //192.168.1.113 为物理主机的ip，不是licode所在的docker容器的ip，因为外部网络通过物理主机然后才访问到licode
+>> - config.erizoController.publicIP = '192.168.1.113'; //192.168.1.113 为物理主机的ip，不是licode所在的docker容器的ip，因为外部网络(例如打开一个网站, 这个网站是部署在docker容器里)通过物理主机(容器宿主)然后才访问到licode
 >> - config.erizoAgent.publicIP = '192.168.1.113'; //192.168.1.113 为物理主机的ip，不是licode所在的docker容器的ip，因为外部网络通过物理主机然后才访问到licode
 > - `./initLicode.sh`，运行licode。如果第一次运行报错(出现这种情况的原因尚且未知)，尝试操作`pkill node`，再重试`./initLicode.sh` 
 > - `./initBasicEample.sh`，如果启动报错，检查mongo是否启动成功
