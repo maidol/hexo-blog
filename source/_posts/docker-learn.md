@@ -70,7 +70,8 @@ tags: docker
 >- `docker images` 列出所有镜像(images) 
 >- `docker ps -a/-l`    列出正在运行的(容器)containers 
 >- `docker pull ubuntu` 下载镜像 
->- `docker run -i -t ubuntu /bin/bash`  运行ubuntu镜像 
+>- `docker run -i -t ubuntu /bin/bash`  运行ubuntu镜像 , 无论前台/后台(-d)运行, 都建议默认加-i参数: -i: Keep STDIN open even if not attached 
+>- `docker run -d -i ubuntu /bin/bash` 后台运行, 并附加进一个stin控制台, 如果/bin/bash被脚本文件(例如/init.sh)代替的话, 则脚本文件里必须加上/bin/bash , 如果缺少/bin/bash则 -i 参数不会起作用; 如果`docker run -d -i ubuntu`后面没有/bin/bash或者脚本文件路径(例如/init.sh), 则默认是/bin/bash 
 >- `docker commit 3a09b2588478 ubuntu:mynewimage`  提交你的变更，并且把容器保存成Tag为mynewimage的新的ubuntu镜像.(注意，这里提交只是提交到本地仓库，类似git) 
 - Docker去sudo
 >- 在Ubuntu下，在执行Docker时，每次都要输入sudo，同时输入密码，这里把当前用户执行权限添加到相应的docker用户组里面 
