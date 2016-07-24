@@ -63,7 +63,7 @@ tags: vps linode vpn nginx
                 "timeout": 300,
                 "method": "aes-256-cfb"
              }
->- 启动shadowsocks `ssserver --manager-address 127.0.0.1:6001 -c ss.json -d start`   -d 代表守护进程运行
+>- 启动shadowsocks `sudo ssserver --manager-address 127.0.0.1:6001 -c ss.json -d start`   -d 代表守护进程运行 , `sudo ssserver -d stop ` 
 >- sslocal是linux的shadowsocks客户端, 执行 `sslocal -h` 查看使用方法 
 - docker 部署shadowsocks
 >- `docker pull oddrationale/docker-shadowsocks` 
