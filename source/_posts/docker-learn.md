@@ -43,12 +43,14 @@ tags: docker
 >>>- Update your package manager. `sudo apt-get update` 
 >>>- Install the recommended package. `sudo apt-get install linux-image-extra-$(uname -r)` 
 >>>- Go ahead and install Docker.
->>- If you are installing on Ubuntu 14.04 or 12.04, apparmor is required. You can install it using: `apt-get install apparmor` 
+>>- If you are installing on Ubuntu 14.04 or 12.04, apparmor is required. You can install it using: `sudo apt-get install apparmor` 
 >>- Ubuntu Precise 12.04 (LTS)
 >>>- `uname -r` 查看 
 >>>- For Ubuntu Precise, Docker requires the 3.13 kernel version. If your kernel version is older than 3.13, you must upgrade it. Refer to this table to see which packages are required for your environment
 >>>- `sudo apt-get update` 
 >>>- Install both the required and optional packages `sudo apt-get install linux-image-generic-lts-trusty` 
+>>>- `sudo apt-get update` 
+>>>- ## apparmor failed to apply profile: no such file or directory `sudo apt-get update` `sudo apt-get install apparmor` 
 >>>- `sudo reboot` After your system reboots, go ahead and install Docker. 
 >- 3. Install (安装和运行都需要sudo或者root)
 >>- `sudo apt-get update` 
@@ -64,7 +66,12 @@ tags: docker
 >- `sudo service docker start` 
 >- `docker version`  
 - 安装 Docker 官方的最新发行版， 支持 Ubuntu 12.04 以上版本
->- `curl -sSL https://get.daocloud.io/docker | sh`  
+>- `sudo apt-get update` 
+>- Install both the required and optional packages `sudo apt-get install linux-image-generic-lts-trusty` 
+>- `sudo apt-get update` 
+>- ## apparmor failed to apply profile: no such file or directory `sudo apt-get update` `sudo apt-get install apparmor` 
+>- `sudo reboot` After your system reboots, go ahead and install Docker. 
+>- `curl -sSL https://get.daocloud.io/docker | sh`  or `curl -sSL https://get.docker.com/ | bash -x` 
 >- `sudo service docker status` 输出 docker start/running 就表示安装成功 
 - docker常用命令
 >- `docker images` 列出所有镜像(images) 
@@ -73,6 +80,10 @@ tags: docker
 >- `docker run -i -t ubuntu /bin/bash`  运行ubuntu镜像 , 无论前台/后台(-d)运行, 都建议默认加-i参数: -i: Keep STDIN open even if not attached 
 >- `docker run -d -i ubuntu /bin/bash` 后台运行, 并附加进一个stdin控制台, 如果/bin/bash被脚本文件(例如/init.sh)代替的话, 则脚本文件里必须加上/bin/bash , 如果缺少/bin/bash则 -i 参数不会起作用; 如果`docker run -d -i ubuntu`后面没有/bin/bash或者脚本文件路径(例如/init.sh), 则默认是/bin/bash 
 >- `docker commit 3a09b2588478 ubuntu:mynewimage`  提交你的变更，并且把容器保存成Tag为mynewimage的新的ubuntu镜像.(注意，这里提交只是提交到本地仓库，类似git) 
+>- 卸载
+>>- `sudo apt-get purge docker-engine` 
+>>- `sudo apt-get autoremove --purge docker-engine` 
+>>- `sudo rm -rf /var/lib/docker` 
 - Docker去sudo
 >- 在Ubuntu下，在执行Docker时，每次都要输入sudo，同时输入密码，这里把当前用户执行权限添加到相应的docker用户组里面 
 >- 添加一个新的docker用户组 `sudo groupadd docker` 

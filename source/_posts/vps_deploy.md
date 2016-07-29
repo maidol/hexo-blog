@@ -323,7 +323,11 @@ branch: master
     -e RABBITMQ_PASSWORD=pwd \
     -e RABBITMQ_VHOST=myvhost \
     frodenas/rabbitmq` 
-
+- ssh免密码登陆
+>- `ssh-keygen -t rsa -P ''` 
+>>- -P表示密码，-P '' 就表示空密码，也可以不用-P参数，这样就要三车回车，用-P就一次回车。它在/home/chenlb下生成.ssh目录，.ssh下有id_rsa和id_rsa.pub 
+>- 把A机下的id_rsa.pub复制到B机下，在B机的.ssh/authorized_keys文件里，用scp复制 `scp .ssh/id_rsa.pub chenlb@192.168.1.181:/home/chenlb/id_rsa.pub`  
+>- B机把从A机复制的id_rsa.pub添加到.ssh/authorzied_keys文件里 `cat id_rsa.pub >> .ssh/authorized_keys` `chmod 600 .ssh/authorized_keys` authorized_keys的权限要是600, A机登录B机`ssh 192.168.1.181` 
 - 流量监控 vnstat/iftop 
 >- ubuntu 下安装 `sudo apt-get install iftop`
 >- `sudo iftop -i eth0`
