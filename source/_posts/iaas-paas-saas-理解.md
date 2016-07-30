@@ -1,7 +1,7 @@
 ---
 title: iaas-paas-saas
 date: 2016-7-22 22:37:00
-tags: iaas paas saas
+tags: [iaas,paas,saas]
 ---
 ### 转自：[http://hi.baidu.com/www100/blog/item/81ff10172dd7b00f4a90a703.html](http://hi.baidu.com/www100/blog/item/81ff10172dd7b00f4a90a703.html)
 - iaas paas saas 三种服务模式
