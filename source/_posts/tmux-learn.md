@@ -1,7 +1,8 @@
 ---
 title: tmux-learn
 date: 2016-7-23 22:37:00
-tags: tmux
+tags: 
+  - tmux
 ---
 - 基本的使用
 > - 一个tmux session 可以包含多个window，一个window包含多个pane，一个pane对应一个终端session 

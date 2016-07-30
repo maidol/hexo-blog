@@ -1,7 +1,8 @@
 ---
 title: docker-learn
 date: 2016-7-22 22:37:00
-tags: docker
+tags: 
+	- docker
 ---
 - 安装 docker  详细步骤
 >- Docker is supported on these Ubuntu operating systems:

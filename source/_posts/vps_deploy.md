@@ -1,7 +1,11 @@
 ---
 title: vps-deploy
 date: 2016-7-06 22:37:00
-tags: vps linode vpn nginx
+tags: 
+  - vps 
+	- linode 
+	- vpn 
+	- nginx
 ---
 - ubuntu下的操作 
 - 创建普通用户, 之后所有的操作使用新用户登录进行

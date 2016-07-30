@@ -1,7 +1,10 @@
 ---
 title: study-github
 date: 2016-7-06 22:37:00
-tags: deploy git github
+tags: 
+  - deploy 
+  - git 
+  - github
 ---
 
 Github新建本地仓库，远程仓库基本用法
