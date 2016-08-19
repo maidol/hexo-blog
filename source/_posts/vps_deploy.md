@@ -198,7 +198,7 @@ tags:
 - 源码安装redis, 并设置远程登陆
 >- 安装make `sudo apt-get make`
 >- 获取安装包 `wget http://download.redis.io/releases/redis-3.2.1.tar.gz`
->- 安装 `tar xzf redis-3.2.1.tar.gz` `cd redis-3.2.1` `make`
+>- 安装 `tar xzf redis-3.2.1.tar.gz` `cd redis-3.2.1` `make` `make test` 
 >- The binaries that are now compiled are available in the src directory. Run Redis with: `src/redis-server --port 6380` or `src/redis-server /etc/redis/redis.conf`  
 >- You can interact with Redis using the built-in client: `src/redis-cli`
 >- 如果要把redis安装到系统, 执行 `cd ./src` `sudo make install`
