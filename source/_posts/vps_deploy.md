@@ -282,7 +282,7 @@ branch: master
 >>- accessed using your favourite web browser by visiting: http://[your IP]:15672/
 >>- guest具有"/"上的全部权限, 密码guest，仅能有localhost访问RabbitMQ包括Plugin，建议删除或更改密码。可通过将配置文件rabbitmq.config中添加`{loopback_users, []`来取消guest的登陆限制:
 [{rabbit, [{loopback_users, []}]}], 然后可使用guest登陆创建一个admin用户, 之后删除这段{loopback_users, []}, guest就无法登陆了, 之后使用新用户进行登陆。二进制安装包默认没有这个配置文件(/etc/rabbitmq/rabbitmq.config), 可以从源码包中copy过来, 在源码包对应的文件`doc/rabbitmq.config.example`
->>- 增加用户 `rabbitmqctl add_user admin admin ` 设置角色 `rabbitmqctl set_user_tags admin administrator`  查看用户列表 `rabbitmqctl list_users` 修改用户的密码`rabbitmqctl  change_password  Username  Newpassword` 
+>>- 增加用户 `rabbitmqctl add_user username ` 设置administrator角色 `rabbitmqctl set_user_tags username administrator`  查看用户列表 `rabbitmqctl list_users` 修改用户的密码`rabbitmqctl  change_password  username  newpassword` 
 >>>- 给用户分配角色后就可以登陆web管理后台
 >>- 新建virtual host `rabbitmqctl add_vhost test_host` , 查看 `rabbitmqctl list_vhosts` 如此用户名为test的用户就可以访问vitrual host为test_host的资源了，并且具备读写的权限 
 >>- 分配访问权限 `rabbitmqctl set_permissions -p test_host  test "test-*" ".*" ".*"` 
