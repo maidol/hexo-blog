@@ -16,4 +16,5 @@ Github新建本地仓库，远程仓库基本用法
 >>- `git add README.md`
 >>- `git commit -m "first commit"`
 >>- `git remote add origin https://github.com/yourId/repoName.git`
-
+- 查看commit
+>- `git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative` 
