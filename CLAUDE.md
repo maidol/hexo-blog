@@ -15,7 +15,7 @@ This repository is a Hexo static blog (Node.js). Note that `node_modules` is not
 - **Deploy to GitHub Pages**: `npm run deploy` (pushes to `https://github.com/maidol/maidol.github.io.git` master branch)
 - **Full build & deploy pipeline**: `npx hexo clean && npm run build && npm run deploy`
 
-*Note: No test suite or linter is configured in `package.json`. The `build` and `deploy` scripts use `scripts/hexo-cli.js` because Hexo 3's generator is incompatible with modern Node.js stream auto-destruction.*
+*Note: No test suite or linter is configured in `package.json`. The `build` and `deploy` scripts use `hexo-cli-compat.js` because Hexo 3's generator is incompatible with modern Node.js stream auto-destruction.*
 
 ## Architecture & Key Structure
 
