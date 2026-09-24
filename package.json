@@ -6,7 +6,8 @@
     "version": "3.9.0"
   },
   "scripts": {
-    "build": "hexo generate --force"
+    "build": "node scripts/hexo-cli.js generate --force",
+    "deploy": "node scripts/hexo-cli.js deploy"
   },
   "dependencies": {
     "hexo": "^3.2.0",

@@ -8,14 +8,14 @@ This repository is a Hexo static blog (Node.js). Note that `node_modules` is not
 
 - **Install dependencies**: `npm install`
 - **Start local preview server**: `npx hexo server` (or `npx hexo s`, accessible at `http://localhost:4000`)
-- **Generate static website**: `npx hexo generate` (or `npx hexo g`, outputs to `public/`)
+- **Generate static website**: `npm run build` (outputs to `public/`)
 - **Clean cache and public output**: `npx hexo clean`
 - **Create a new post**: `npx hexo new "post-title"` (creates Markdown file in `source/_posts/`)
 - **Create a new standalone page**: `npx hexo new page "page-name"`
-- **Deploy to GitHub Pages**: `npx hexo deploy` (or `npx hexo d`, pushes to `https://github.com/maidol/maidol.github.io.git` master branch)
-- **Full build & deploy pipeline**: `npx hexo clean && npx hexo generate && npx hexo deploy`
+- **Deploy to GitHub Pages**: `npm run deploy` (pushes to `https://github.com/maidol/maidol.github.io.git` master branch)
+- **Full build & deploy pipeline**: `npx hexo clean && npm run build && npm run deploy`
 
-*Note: No test suite or linter is configured in `package.json`.*
+*Note: No test suite or linter is configured in `package.json`. The `build` and `deploy` scripts use `scripts/hexo-cli.js` because Hexo 3's generator is incompatible with modern Node.js stream auto-destruction.*
 
 ## Architecture & Key Structure
 
