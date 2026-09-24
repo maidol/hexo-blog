@@ -18,6 +18,8 @@ categories:
 
 本文将全面拆解 DrSG Harness Kit 的双平面架构设计、工作机制、核心动词规范以及在生产环境中的实战部署与使用方法。
 
+项目仓库：[maidol/drsg-harness-kit](https://github.com/maidol/drsg-harness-kit)
+
 ---
 
 ## 一、双平面架构设计与核心原理
