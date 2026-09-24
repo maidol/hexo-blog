@@ -24,7 +24,7 @@ categories:
 
 DrSG Harness Kit 最核心的架构特征在于**「代码图」与「记忆层」的双平面彻底隔离与拓扑正交**。
 
-![一台机器上的部署拓扑：记忆层一个全局 daemon，代码图每仓一个](/images/drsg-harness-kit/daemon-topology.svg)
+![一台机器上的部署拓扑：记忆层一个全局 daemon，代码图每仓一个](../images/drsg-harness-kit/daemon-topology.svg)
 
 两边是**方向相反**的：记忆层聚合（一个 daemon、一个库，按 `p.path` 分项目），代码图独立（一仓一端口、一仓一库）。两个 daemon 都不开机自启，按需启动。
 
@@ -49,7 +49,7 @@ DrSG Harness Kit 最核心的架构特征在于**「代码图」与「记忆层�
 3. **标记解析边界**：对于动态语言特性或跨模块未确定的引用，明确记录为 `UnresolvedRef` 节点——**能够明确指出「未解析」而不是凭空猜测，是代码图敢于返回「不存在」的前提**。
 4. **性能表现**：首次载入 wasm 插件约耗时 13 秒，但之后的每次增量提交折叠仅需 1~2 秒左右。
 
-![代码图的工作原理：源码树经 wasm 插件折进 plane，动词从 plane 读，snippet 还要读文件树](/images/drsg-harness-kit/code-plane-architecture.svg)
+![代码图的工作原理：源码树经 wasm 插件折进 plane，动词从 plane 读，snippet 还要读文件树](../images/drsg-harness-kit/code-plane-architecture.svg)
 
 图中那条区别对待的线值得重点关注：**结构类动词（`context` / `impact` / `trace` / `describe`）只查 plane，因此跨仓可用；而 `grep` 和 `snippet` 要读文件树，文件树是进程级的（由 `--dir` 指定），与调用时传的 `plane` 无关**。这意味着跨仓问结构没问题，但跨仓要源码必须找该仓库自己的 daemon。
 
@@ -61,7 +61,7 @@ DrSG Harness Kit 最核心的架构特征在于**「代码图」与「记忆层�
 
 为此，Kit 提供了 `codegraph-router.py`，实现 MCP-to-MCP 的透明路由分发：
 
-![router 的结构：registry 只存路径，地址与 token 现读各仓自己的 .mcp.json](/images/drsg-harness-kit/codegraph-router-architecture.svg)
+![router 的结构：registry 只存路径，地址与 token 现读各仓自己的 .mcp.json](../images/drsg-harness-kit/codegraph-router-architecture.svg)
 
 ```text
 智能体在任意工作区提出请求：
@@ -167,7 +167,7 @@ DrSG Harness Kit 最核心的架构特征在于**「代码图」与「记忆层�
    └── 记录会话耗时，从 transcript 中统计工具调用成败与命令表现
 ```
 
-![一次会话的完整流程：启动注入、每轮召回、会话内写入、收尾，六条泳道](/images/drsg-harness-kit/memory-sharing-flow.svg)
+![一次会话的完整流程：启动注入、每轮召回、会话内写入、收尾，六条泳道](../images/drsg-harness-kit/memory-sharing-flow.svg)
 
 整个会话生命周期清晰划分为：启动注入、每轮召回、会话内写入与收尾。其中遥测（`recall.jsonl`）不论命中与否都会记录一行，这是后续评估召回质量的量化基础；跨项目待办（Event）独立于评分排序，直接由终端提示给人看，避免干扰模型的常规上下文。
 
@@ -204,11 +204,11 @@ tar -xzf dist/drsg-harness-kit-*.tar.gz -C /tmp/
 - 为指定项目复制并配置 `.claude/hooks/` 和 `.drsg/env`（权限 `chmod 600`）；
 - 自动注册本地代码图服务至 `.mcp.json` 并执行连通性自检。
 
-![装完之后的样子：项目里只有配置与遥测，daemon 和库全机唯一一份](/images/drsg-harness-kit/memory-sharing-architecture.svg)
+![装完之后的样子：项目里只有配置与遥测，daemon 和库全机唯一一份](../images/drsg-harness-kit/memory-sharing-architecture.svg)
 
 从图中清晰可见：**留在项目里的只有 `.drsg/env`（Token 配置，权限 600，已加入 gitignore）、Hooks 脚本和 `.drsg/recall.jsonl`**；而 Daemon 进程与数据库 `memory.drsg` 全机只有一份。因此新增一个项目不会额外增加 Daemon 开销，删除一个项目也绝不会破坏其他项目的持久记忆。
 
-### 5.2 日常健康检查三板斧
+### 5.2 日常健康检查
 
 在遇到任何智能体工具异常或配置变更后，可通过以下三条命令完成快速体检：
 
