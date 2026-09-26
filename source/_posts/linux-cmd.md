@@ -61,7 +61,7 @@ ps -ef | grep docker
 
 ```bash
 # scp 复制文件到远程主机（远程主机需要运行 ssh 服务）
-scp /home/daisy/full.tar.gz k@172.19.2.75:/home/k
+scp ~/full.tar.gz user@192.168.1.100:/home/user
 
 # Ubuntu 安装并启动 ssh 服务
 sudo apt-get install openssh-server

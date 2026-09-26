@@ -14,7 +14,7 @@ tags:
 
 ## 新建仓库并推送到 GitHub
 
-> **前提**：先在 GitHub 上手动创建空仓库 `https://github.com/yourId/repoName.git`（不要勾选自动生成 README，否则第一次推送会冲突）。
+> **前提**：先在 GitHub 上手动创建空仓库 `https://github.com/yourId/repoName.git`（不要勾选自动生成 README，否则远程仓库已有提交，第一次推送会因为历史不一致被拒绝）。
 
 ```bash
 mkdir gitRepo

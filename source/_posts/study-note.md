@@ -151,7 +151,7 @@ ssserver -d stop
 }
 ```
 
-> `server` 要填写实际 IP，不要填写域名。因为本机为了让 manager 访问管理 API，需要在 `/etc/hosts` 中添加 `127.0.0.1 v1.maidol.pw`（或 `<局域网地址> v1.maidol.pw`）。如果 `server` 填域名 `v1.maidol.pw`，它会被解析成本地地址，导致外部访问不到 shadowsocks 服务。
+> `server` 要填写实际 IP，不要填写域名。因为本机为了让 manager 访问管理 API，需要在 `/etc/hosts` 中添加 `127.0.0.1 v1.example.com`（或 `<局域网地址> v1.example.com`）。如果 `server` 填域名 `v1.example.com`，它会被解析成本地地址，导致外部访问不到 shadowsocks 服务。
 
 一次性验证（OTA）：每次发送数据到代理服务器时，都在数据包中附加一些验证数据。
 
@@ -163,8 +163,8 @@ ssserver -d stop
 
 | `--manager-address` 设置为 | 部署方式 | `/etc/hosts` 需要添加 |
 | --- | --- | --- |
-| `127.0.0.1` | 两者部署在同一台服务器 | `127.0.0.1 v1.maidol.pw` |
-| 局域网地址 | 两者部署在同一局域网 | `<局域网地址> v1.maidol.pw` |
+| `127.0.0.1` | 两者部署在同一台服务器 | `127.0.0.1 v1.example.com` |
+| 局域网地址 | 两者部署在同一局域网 | `<局域网地址> v1.example.com` |
 | 外网域名或 IP | 不推荐：管理 API 会暴露给局域网外的机器，不安全 | — |
 
 ```bash
@@ -217,6 +217,8 @@ SSH 采用"非对称密钥系统"，也就是常说的公钥/私钥加密系统�
 
 和第一种方式相比，这种方式不需要在网络上传送口令。
 
+> 上面"用公钥加密质询"是 SSH-1 的做法。SSH-2 中实际是客户端用私钥对本次会话的数据进行**签名**，服务器用 `authorized_keys` 里的公钥**验证签名**。
+
 简单来说，把客户端的公钥放到服务器上，客户端就可以免密码登录服务器了。公钥默认放在要登录的用户家目录下的 `~/.ssh/authorized_keys` 文件中。具体操作见 [VPS 部署笔记：SSH 免密码登录](/2016/07/06/vps_deploy/#15-SSH-免密码登录)。
 
 ## 2016-05-02
@@ -229,13 +231,13 @@ SSH 采用"非对称密钥系统"，也就是常说的公钥/私钥加密系统�
 
 ### ES6 harmony-reflect
 
-用 [harmony-reflect](https://github.com/tvcutsem/harmony-reflect)（ES6 `Proxy` / `Reflect` 的 polyfill）实现 AOP。
+用 [harmony-reflect](https://github.com/tvcutsem/harmony-reflect)（为当时的 JS 引擎提供 ES6 `Proxy` / `Reflect` API 的 shim）实现 AOP。
 
 ## 2016-04-14
 
 ### Promise 的理解
 
-参考：[JS 魔法堂：剖析源码理解 Promises/A 规范](http://www.cnblogs.com/fsjohnhuang/p/4135149.html)
+参考：[http://www.cnblogs.com/fsjohnhuang/p/4135149.html](http://www.cnblogs.com/fsjohnhuang/p/4135149.html)
 
 下面是帮助理解 Promise 内部结构的**伪代码**，不能直接运行：
 
@@ -333,9 +335,9 @@ git clone https://github.com/tmux-plugins/tmux-continuum.git
 在 `~/.tmux.conf` 中添加：
 
 ```bash
-run-shell ~/.tmux/tmux-continuum/continuum.tmux
-# 默认每 15 分钟备份一次，可以改为 60 分钟
+# 默认每 15 分钟备份一次，可以改为 60 分钟（选项写在 run-shell 之前）
 set -g @continuum-save-interval '60'
+run-shell ~/.tmux/tmux-continuum/continuum.tmux
 ```
 
 然后执行 `tmux source-file ~/.tmux.conf` 重载配置。
@@ -389,9 +391,11 @@ docker build -t licode-image .
 
 | 脚本 | 说明 |
 | --- | --- |
-| `./installUbuntuDeps.sh` | 安装所有依赖。必须确保没有 error，warning 可以忽略 |
-| `./installErizo.sh` | 需要 Node 0.10.37，下载安装失败会导致后面编译失败 |
+| `./installUbuntuUnattend.sh` | 安装所有依赖。必须确保没有 error，warning 可以忽略 |
+| `./installErizo.sh` | 这一步会下载安装 Node 0.10.37，下载安装失败会导致后面编译失败 |
 | `./installNuve.sh` | 安装过程会启动 MongoDB，必须确保启动成功。可能因为磁盘空间不足而启动失败，这时需要手动启动，或修改对应的启动脚本。这一步会生成 `licode_config.js` |
+
+> 原笔记中第二个脚本写作 `installZerio.sh`，licode 的脚本目录中并没有这个文件（见下文 2016-03-12 列出的脚本），应为 `installErizo.sh`。
 
 启动容器：
 
@@ -416,7 +420,7 @@ docker run -di --name licode \
 docker exec -it licode /bin/bash
 ```
 
-也可以参考镜像作者的建议禁用 userland-proxy。否则 Docker 会为 30000~31000 的每个 UDP 端口都启动一个代理进程，大多数情况下只用 iptables 就够了。在 `/etc/default/docker` 中添加：
+也有一种建议是禁用 userland-proxy。否则 Docker 会为 30000~31000 的每个 UDP 端口都启动一个代理进程，大多数情况下只用 iptables 就够了。在 `/etc/default/docker` 中添加：
 
 ```bash
 DOCKER_OPTS="--userland-proxy=false"
@@ -427,10 +431,10 @@ DOCKER_OPTS="--userland-proxy=false"
 **最关键的配置**：在 Docker 中运行 licode，需要修改 `licode_config.js`：
 
 ```js
-// 192.168.1.113 是物理主机（容器宿主）的 IP，而不是 licode 所在容器的 IP，
+// 192.168.1.100 是物理主机（容器宿主）的 IP，而不是 licode 所在容器的 IP，
 // 因为外部网络要先经过物理主机才能访问到容器里的 licode
-config.erizoController.publicIP = '192.168.1.113';
-config.erizoAgent.publicIP = '192.168.1.113';
+config.erizoController.publicIP = '192.168.1.100';
+config.erizoAgent.publicIP = '192.168.1.100';
 ```
 
 启动：
@@ -451,7 +455,7 @@ docker start licode
 docker exec -it licode /bin/bash   # exit 退出
 ```
 
-访问 `https://192.168.1.113:3004`，没有反应的话刷新一下页面。
+访问 `https://192.168.1.100:3004`，没有反应的话刷新一下页面。
 
 ### 使用 Docker Hub 镜像部署 licode
 
@@ -465,7 +469,7 @@ docker pull rofl256/licodebasic
 
 ### VirtualBox 添加硬盘
 
-VirtualBox 不能直接调整已有虚拟硬盘的大小，硬盘空间不足时只能添加新硬盘。
+当时的做法是：VirtualBox 图形界面不能直接调整已有虚拟硬盘的大小，硬盘空间不足时就添加一块新硬盘。
 
 > VirtualBox 4.0 起可以用 `VBoxManage modifyhd <disk.vdi> --resize <MB>` 扩容动态分配的 VDI/VHD 硬盘，扩容后还需要在系统内调整分区。
 
@@ -740,7 +744,7 @@ sudo ln -s /usr/local/lib/libuv.so.1.0.0 /usr/lib64/libuv.so
 
 ```bash
 git clone https://github.com/aspnet/Home.git
-cd Home/samples/<示例目录>
+cd Home/<示例目录>
 dnu restore      # 还原示例所需的包
 dnx run          # 控制台应用
 dnx kestrel      # Web 应用
@@ -769,6 +773,8 @@ dnu restore          # 安装运行所需的 NuGet 包
   ```bash
   git config --global credential.helper store
   ```
+
+  `store` 会把凭据**明文**保存在 `~/.git-credentials` 中。更安全的做法是用 `cache`（只保存在内存中一段时间），或使用系统的凭据管理器。
 
 - 使用 SSH 方式需要先生成并添加 SSH key。
 

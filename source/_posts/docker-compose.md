@@ -19,7 +19,7 @@ tags:
 - [使用示例：Django](https://docs.docker.com/compose/django/)
 - [docker-compose 入门（CSDN）](http://blog.csdn.net/lincyang/article/details/44588397)
 
-> **时效说明**：本文写于 2016 年，使用的是独立的 docker-compose 1.8.0。现在 Compose V2 已经作为 Docker 插件内置，命令是 `docker compose`（中间是空格，不再有连字符），新装的 Docker 一般不需要单独安装。
+> **时效说明**：本文写于 2016 年，使用的是独立的 docker-compose 1.8.0。现在的 Compose V2 以 Docker CLI 插件的形式提供，命令是 `docker compose`（中间是空格，不再有连字符）。Docker Desktop 自带；在 Linux 上可以通过 `docker-compose-plugin` 包安装。
 
 ## 安装
 
@@ -83,7 +83,7 @@ services:
       - RABBITMQ_DEFAULT_VHOST=xxx
 ```
 
-> 2016 年原文使用的是不带 `version` / `services` 的 v1 格式（服务直接写在顶层）。v1 已经废弃，新版本的 Compose 不再支持。
+> 2016 年原文使用的是不带 `version` / `services` 的 v1 格式（服务直接写在顶层）。v1 格式已经废弃，不建议再使用。另外，在当前的 Compose 规范中顶层的 `version` 字段也已过时，Compose V2 会忽略它并给出警告，新写的文件可以直接从 `services:` 开始。
 
 ## 常用命令
 

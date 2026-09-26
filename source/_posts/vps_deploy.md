@@ -15,7 +15,7 @@ tags:
 
 > **说明**：以下操作均在 Ubuntu 下进行，写于 2016 年。文中的软件版本（MySQL 5.7.13、Redis 3.2.1、RabbitMQ 3.6.3 等）都比较旧，实际安装时请替换为当前版本，并以官方文档为准。
 >
-> 文中的 `your_server_ip`、`yourpassword`、`kmaidol` 等都是占位符，请替换成自己的值。
+> 文中的 `your_server_ip`、`yourpassword`、`deploy`（用户名）、`example.com`（域名）等都是占位符，请替换成自己的值。
 
 ## 目录
 
@@ -43,11 +43,11 @@ tags:
 ### 1.1 创建用户并授予 sudo 权限
 
 ```bash
-# 创建用户 kmaidol
-adduser kmaidol
+# 创建用户 deploy
+adduser deploy
 
 # 推荐做法：把用户加入 sudo 组
-usermod -aG sudo kmaidol
+usermod -aG sudo deploy
 ```
 
 也可以直接编辑 sudoers 文件。**务必使用 `visudo`**，它会在保存前检查语法，避免因为写错把自己锁在外面。不要用 `chmod` 修改 `/etc/sudoers` 的权限后再用 vim 编辑：
@@ -61,10 +61,10 @@ visudo
 ```text
 # User privilege specification
 root    ALL=(ALL:ALL) ALL
-kmaidol ALL=(ALL:ALL) ALL
+deploy  ALL=(ALL:ALL) ALL
 ```
 
-然后用 `kmaidol` 重新登录，或者执行 `su - kmaidol` 切换用户。
+然后用 `deploy` 重新登录，或者执行 `su - deploy` 切换用户。
 
 ### 1.2 禁止 root 远程登录
 
@@ -238,10 +238,10 @@ mongo   # 本机登录
 
 ```js
 use admin
-db.createUser({ user: 'kmaidol', pwd: 'xxxxxx', roles: ['root'] })
+db.createUser({ user: 'admin', pwd: 'xxxxxx', roles: ['root'] })
 ```
 
-> 原文使用的 `db.addUser()` 在 MongoDB 2.6 起已经废弃，3.0 后被移除，请改用 `db.createUser()`。
+> 原文使用的 `db.addUser()` 从 MongoDB 2.6 起已经废弃，之后的版本中被移除，请改用 `db.createUser()`。
 
 **第 2 步：修改 `/etc/mongodb.conf`**
 
@@ -266,7 +266,7 @@ sudo iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport 27017 -j ACCEP
 
 ```js
 use test
-db.createUser({ user: 'kmaidol', pwd: 'xxxxxx', roles: ['readWrite'] })
+db.createUser({ user: 'admin', pwd: 'xxxxxx', roles: ['readWrite'] })
 ```
 
 之后就可以用这个用户访问 `test` 库了。
@@ -320,23 +320,23 @@ http {
     # test
     server {
         listen       80;
-        server_name  v1.maidol.pw;
+        server_name  v1.example.com;
 
         location / {
             proxy_pass http://www.google.com;
         }
     }
 
-    # maidol.pw
+    # example.com
     server {
         listen       80;
         listen       443 ssl;   # 只在 443 端口启用 SSL
-        server_name  maidol.pw;
+        server_name  example.com;
 
         # 证书文件路径
-        ssl_certificate     /home/kmaidol/cert/1_maidol.pw_bundle.crt;
+        ssl_certificate     /path/to/cert/example.com_bundle.crt;
         # 私钥文件路径
-        ssl_certificate_key /home/kmaidol/cert/2_maidol.pw.key;
+        ssl_certificate_key /path/to/cert/example.com.key;
 
         location / {
             # 代理到上面定义的 upstream，名字要一致
@@ -455,7 +455,7 @@ export PATH=/usr/local/mysql/bin:$PATH
 
 MySQL 5.7 使用 `mysqld --initialize` 初始化时，会为 root 生成一个**临时密码**，并打印在初始化命令的输出和错误日志中（行内包含 `A temporary password is generated for root@localhost`）。
 
-> 原文说"密码保存在 `/root/.mysql_secret`"，那是 MySQL 5.6 用 `mysql_install_db` 初始化时的行为，5.7 的 `--initialize` 不会生成这个文件。
+> 原文说"密码保存在 `/root/.mysql_secret`"，那是旧的 `mysql_install_db` 初始化方式的行为（5.6 加 `--random-passwords` 参数时，以及 5.7.4 ~ 5.7.5 默认如此）。5.7.6 起推荐的 `mysqld --initialize` 不会生成这个文件。
 
 用临时密码登录后修改密码：
 
@@ -581,7 +581,7 @@ redis-cli -h <ip> -p <port> -a yourpassword
 
 ## 13. Cloud9 IDE
 
-[c9/core](https://github.com/c9/core)（该项目已经停止维护）：
+[c9/core](https://github.com/c9/core)（该项目已多年没有更新）：
 
 ```bash
 git clone https://github.com/c9/core.git c9
@@ -594,7 +594,7 @@ node server.js --auth username:password
 
 ## 14. RabbitMQ
 
-RabbitMQ 依赖 Erlang。下面记录了几种安装方式，**实测只有 14.3 的二进制包方式和 14.5 的 Docker 方式可行**。
+RabbitMQ 依赖 Erlang。下面记录了几种安装方式。当时只有 **14.3 的预编译二进制包方式**实际测试成功，其余方式仅作记录；现在更推荐 14.5 的 Docker 方式。
 
 ### 14.1 源码安装 Erlang
 
@@ -602,7 +602,7 @@ RabbitMQ 依赖 Erlang。下面记录了几种安装方式，**实测只有 14.3
 wget http://erlang.org/download/otp_src_19.0.tar.gz
 tar zxvf otp_src_19.0.tar.gz
 cd otp_src_19.0
-./configure --prefix=/home/kmaidol/erlang
+./configure --prefix=$HOME/erlang
 make
 make install
 ```
@@ -611,7 +611,7 @@ make install
 
 ```text
 configure: error: No curses library functions found
-configure: error: /bin/sh '/home/kmaidol/erlang/configure' failed for erts
+configure: error: /bin/sh '/home/deploy/erlang/configure' failed for erts
 ```
 
 原因是缺少 ncurses 包，安装后重新执行 `configure`：
@@ -624,7 +624,7 @@ sudo apt-get install libncurses5-dev
 
 ```bash
 # set erlang environment
-export PATH=$PATH:/home/kmaidol/erlang/bin
+export PATH=$PATH:$HOME/erlang/bin
 ```
 
 执行 `erl`，能进入 Erlang shell 就说明安装成功。
@@ -666,14 +666,14 @@ xz -d rabbitmq-server-generic-unix-3.6.3.tar.xz
 tar -xvf rabbitmq-server-generic-unix-3.6.3.tar
 
 # 建议放到当前用户目录下，避免 sudo 时出现 command not found
-cp -rf ./rabbitmq_server-3.6.3 /home/k/rabbitmq
+cp -rf ./rabbitmq_server-3.6.3 $HOME/rabbitmq
 ```
 
 在 `/etc/profile` 中添加环境变量，并执行 `source /etc/profile`：
 
 ```bash
 # set rabbitmq environment
-export PATH=$PATH:/home/k/rabbitmq/sbin
+export PATH=$PATH:$HOME/rabbitmq/sbin
 ```
 
 常用命令：
@@ -702,7 +702,7 @@ sudo apt-get update
 sudo apt-get install rabbitmq-server
 ```
 
-### 14.5 使用 Docker 部署（推荐）
+### 14.5 使用 Docker 部署
 
 **官方镜像**（[rabbitmq](https://hub.docker.com/_/rabbitmq/)）：
 
@@ -813,7 +813,7 @@ cat ~/id_rsa.pub >> ~/.ssh/authorized_keys
 chmod 600 ~/.ssh/authorized_keys
 ```
 
-> `authorized_keys` 的权限必须是 600，`~/.ssh` 目录的权限必须是 700，否则 sshd 会拒绝使用这个公钥。
+> sshd 默认开启 `StrictModes`：家目录、`~/.ssh` 和 `authorized_keys` 不能让组用户或其他用户可写，否则会拒绝使用这个公钥。一般把 `~/.ssh` 设为 700、`authorized_keys` 设为 600。
 
 **第 3 步：在 A 机上登录 B 机**
 
