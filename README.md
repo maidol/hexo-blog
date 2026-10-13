@@ -8,6 +8,8 @@
 .
 ├── _config.yml        # 站点配置
 ├── scaffolds/         # 新建文章 / 草稿 / 页面的模板
+├── skills/          # 可复用的 Claude Code skill（不参与博客生成）
+│   └── handdrawn-pptx/  # 手绘黑白风格 PPT 生成，见其中的 SKILL.md
 ├── source/
 │   ├── _posts/        # 已发布的文章
 │   └── _drafts/       # 草稿（不会生成到站点）
