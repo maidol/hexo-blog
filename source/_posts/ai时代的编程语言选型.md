@@ -26,7 +26,7 @@ AI 写代码以后，"难学、难写、难读"这些语言之间的差距大多
 这张图挑的维度对 Rust 有利。对后端来说，有几处要打折扣：
 
 - 大多数后端是 IO 密集型，瓶颈在数据库和网络，Go 和 Rust 的速度差别通常感受不到。
-- 现代 Go 的 GC 停顿一般在亚毫秒级，绝大多数服务不在乎。
+- Go 从 1.5 起改为并发 GC，Go 团队 2016 年就把典型的最坏 STW 停顿降到了 100 微秒以内，绝大多数服务不在乎这点停顿（超大堆的场景另说）。
 - Rust 编译器挡住的是**数据竞争**，挡不住死锁、逻辑竞态和分布式一致性问题。
 
 图里也没列编译速度、生态成熟度、招人成本这些维度。过去 Rust 最大的问题是**难**：学习曲线陡，写起来慢，读别人的代码费劲。AI 编程时代，这一点变了。
@@ -87,10 +87,16 @@ graph.nodes[id].value         // 编译通过，读到的是 b，不报错
 
 ## 趋势已经在发生
 
-用 Rust 重写已有软件，已经不只是设想：
+用 Rust 写新一代软件、逐步替换老软件，已经不只是设想：
 
-- **开发者工具：** Python 生态的 uv、ruff，前端的 Rspack、Turbopack、Biome；
-- **系统层：** Linux 内核接纳了 Rust，Android 新代码大量使用 Rust，内存安全漏洞的比例明显下降；Windows 也有部分组件在用 Rust 重写。
+- **开发者工具：** 很多原本用 JS、Python 写的工具，正在被用 Rust 写的新工具替代。
+  - Python 生态：Astral 的 uv（包和项目管理，可替代 pip、pip-tools、pipx、poetry、pyenv 等）和 ruff（linter + formatter）；
+  - 前端生态：字节跳动的 Rspack（兼容 webpack 的打包器）、Vercel 的 Turbopack（Next.js 内置的增量打包器）、Biome（Rome 的官方分支，覆盖格式化和 lint）。
+- **Linux 内核：** 2023 年 12 月首批 Rust 驱动被合入，随 6.8 版本发布；2025 年 12 月的维护者峰会上，Rust 正式去掉了"实验性"标签。不过目前体量还很小：2025 年 4 月内核约有 3400 万行 C 代码，Rust 只有约 2.5 万行。
+- **Android：** 据 Google 公布的数据，内存安全漏洞在 Android 全部漏洞中的占比，从 2019 年的 76% 降到 2024 年的 24%，2025 年首次低于 20%；Rust 代码的内存安全漏洞密度比 Android 的 C/C++ 代码低约 1000 倍。Android 16 中基于 6.12 内核的设备已经带上了用 Rust 写的 ashmem 驱动。
+- **Windows：** 微软已把部分内核代码用 Rust 重写，Windows 11 中出现了 Rust 写的内核组件 `win32kbase_rs.sys`。但微软也明确表示，没有把整个 Windows 用 Rust 重写的计划。
+
+这些例子的共同点是：新组件、安全敏感的组件优先用 Rust，存量代码逐步替换，而不是一次性全部重写。
 
 AI 会加快这个过程，因为重写最大的成本（人力和理解旧代码）正在变便宜。Rust 本身也在演进，持续吸收其他语言的优点。
 
@@ -124,3 +130,18 @@ AI 会加快这个过程，因为重写最大的成本（人力和理解旧代�
 AI 编程时代，语言之间"好不好写"的差距基本被抹平，剩下的是技术取舍。在这些取舍里，Rust 用编译器替 AI 兜底，最适合"AI 写、机器验证"的开发方式。除了平台和生态绑定的领域，新项目基本可以直接选 Rust；历史包袱，交给时间和 AI 慢慢消化。
 
 更长远看，真正在收敛的是一种开发方式：让机器尽可能多地证明代码是对的。Rust 是这个方向目前最成熟的代表。
+
+## 参考资料
+
+- Google 安全博客：[Memory Safe Languages in Android 13](https://security.googleblog.com/2022/12/memory-safe-languages-in-android-13.html)（2022）
+- Google 安全博客：[Eliminating Memory Safety Vulnerabilities at the Source](https://security.googleblog.com/2024/09/eliminating-memory-safety-vulnerabilities-Android.html)（2024）
+- Google 安全博客：[Rust in Android: move fast and fix things](https://security.googleblog.com/2025/11/rust-in-android-move-fast-fix-things.html)（2025）
+- Wikipedia：[Rust for Linux](https://en.wikipedia.org/wiki/Rust_for_Linux)
+- DevClass：[Rust boosted by permanent adoption for Linux kernel code](https://devclass.com/2025/12/15/rust-boosted-by-permanent-adoption-for-linux-kernel-code/)（2025）
+- Thurrott：[First Rust Code Shows Up in the Windows 11 Kernel](https://www.thurrott.com/windows/windows-11/282995/first-rust-code-shows-up-in-the-windows-11-kernel)
+- The New Stack：[Microsoft's Rust Bet: From Blue Screens to Safer Code](https://thenewstack.io/microsofts-rust-bet-from-blue-screens-to-safer-code/)
+- Astral：[uv 文档](https://docs.astral.sh/uv/)、[uv: Python packaging in Rust](https://astral.sh/blog/uv)
+- Rspack：[Introduction](https://rspack.rs/guide/start/introduction)
+- Next.js：[Turbopack](https://nextjs.org/docs/app/api-reference/turbopack)
+- Biome：[官网](https://biomejs.dev/)、[Announcing Biome](https://biomejs.dev/blog/announcing-biome/)
+- golang-dev：[Sub-millisecond GC pauses](https://groups.google.com/g/golang-dev/c/Ab1sFeoZg_8/m/_DaL0E8fAwAJ)（2016）
